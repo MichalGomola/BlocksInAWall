@@ -9,7 +9,15 @@ public class Wall implements Structure{
 
     @Override
     public Optional<Block> findBlockByColor(String color) {
-        return Optional.empty();
+        return blocks.stream()
+                .filter(b -> b.getColor().equals(color))
+                .findAny()
+                .or(() -> blocks.stream()
+                        .filter(b -> b instanceof CompositeBlock)
+                        .map(CompositeBlock.class::cast)
+                        .flatMap(cb -> cb.getBlocks().stream())
+                        .filter(b -> b.getColor().equals(color))
+                        .findAny());
     }
 
     @Override
@@ -22,7 +30,7 @@ public class Wall implements Structure{
         return (int) blocks.stream().
                 flatMap(b -> {
                     if (b instanceof CompositeBlock) {
-                        return Stream.of(((CompositeBlock) b).getBlocks());
+                        return ((CompositeBlock) b).getBlocks().stream();
                     } else {
                         return Stream.of(b);
                     }
