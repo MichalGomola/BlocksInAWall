@@ -2,6 +2,7 @@ package org.mg.task;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Wall implements Structure{
@@ -22,7 +23,9 @@ public class Wall implements Structure{
 
     @Override
     public List<Block> findBlocksByMaterial(String material) {
-        return null;
+        return blocks.stream()
+                .filter(b -> b.getMaterial().equals(material))
+                .collect(Collectors.toList());
     }
 
     @Override
