@@ -2,6 +2,7 @@ package org.mg.task;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Wall implements Structure{
     private List<Block> blocks;
@@ -18,6 +19,13 @@ public class Wall implements Structure{
 
     @Override
     public int count() {
-        return 0;
+        return (int) blocks.stream().
+                flatMap(b -> {
+                    if (b instanceof CompositeBlock) {
+                        return Stream.of(((CompositeBlock) b).getBlocks());
+                    } else {
+                        return Stream.of(b);
+                    }
+                }).count();
     }
 }
