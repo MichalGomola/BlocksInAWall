@@ -10,33 +10,41 @@ public class Wall implements Structure{
 
     @Override
     public Optional<Block> findBlockByColor(String color) {
-        return blocks.stream()
+        return prepareAllBlocks()
                 .filter(b -> b.getColor().equals(color))
-                .findAny()
-                .or(() -> blocks.stream()
-                        .filter(b -> b instanceof CompositeBlock)
-                        .map(CompositeBlock.class::cast)
-                        .flatMap(cb -> cb.getBlocks().stream())
-                        .filter(b -> b.getColor().equals(color))
-                        .findAny());
+                .findAny();
     }
 
     @Override
     public List<Block> findBlocksByMaterial(String material) {
-        return blocks.stream()
-                .filter(b -> b.getMaterial().equals(material))
+        return prepareAllBlocks().filter(b -> b.getMaterial().equals(material))
                 .collect(Collectors.toList());
     }
 
     @Override
     public int count() {
-        return (int) blocks.stream().
+        return (int) prepareAllBlocks().count();
+    }
+
+    private Stream<Block> prepareAllBlocks() {
+        return blocks.stream().
                 flatMap(b -> {
                     if (b instanceof CompositeBlock) {
-                        return ((CompositeBlock) b).getBlocks().stream();
+                        return Stream.concat(Stream.of(b), prepareAllBlocks(((CompositeBlock) b).getBlocks())) ;
                     } else {
                         return Stream.of(b);
                     }
-                }).count();
+                });
+    }
+
+    private Stream<Block> prepareAllBlocks(List<Block> blocks) {
+        return blocks.stream().
+                flatMap(b -> {
+                    if (b instanceof CompositeBlock) {
+                        return Stream.concat(Stream.of(b), prepareAllBlocks(((CompositeBlock) b).getBlocks()));
+                    } else {
+                        return Stream.of(b);
+                    }
+                });
     }
 }
