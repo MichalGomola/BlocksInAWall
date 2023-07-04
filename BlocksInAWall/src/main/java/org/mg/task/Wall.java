@@ -33,14 +33,7 @@ public class Wall implements Structure{
     }
 
     private Stream<Block> prepareAllBlocks() {
-        return emptyIfNull(blocks).stream().
-                flatMap(b -> {
-                    if (b instanceof CompositeBlock) {
-                        return Stream.concat(Stream.of(b), prepareAllBlocks(((CompositeBlock) b).getBlocks())) ;
-                    } else {
-                        return Stream.of(b);
-                    }
-                });
+        return prepareAllBlocks(blocks);
     }
 
     private Stream<Block> prepareAllBlocks(List<Block> blocks) {
